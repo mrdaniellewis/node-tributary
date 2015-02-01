@@ -325,6 +325,30 @@ describe( 'a tributary stream', function() {
 
 	} );
 
+	it( 'removes placeholders when getStream returns undefined ', function() {
+
+		function getStream( filename, cb ) {
+			cb();
+		}
+
+		var stream = new Tributary( { getStream: getStream } )
+			.on( 'error', function(e) {
+				console.log(e);
+			} );
+
+		var ret = collect( stream, 'utf8' );
+
+		stream.end( 'foo <!-- include "filename" --> bar' );
+
+		return ret
+			.then( function(data) {
+				// Placeholder should be removed
+				expect(data).toBe( 'foo  bar' );
+			} );
+
+
+	} );
+
 	it( 'allows custom placeholders', function() {
 
 		function getStream( filename, cb ) {

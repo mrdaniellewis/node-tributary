@@ -15,8 +15,8 @@ var debug = require('debug')('tributary');
  *  @param {String} start The placeholder end
  *  @param {Integer} maxPathLength The maximum length of the placeholder
  */
-function Matcher( start, end, maxPathLength) {
-    this.delimiter = '"';
+function Matcher( start, end, maxPathLength, delimiter ) {
+    this.delimiter = delimiter || '"';
     this.maxPathLength = maxPathLength || 512;
     this.cursor = 0;
     this.filename = '';
@@ -143,7 +143,9 @@ Tributary.prototype._insertFile = function( input ) {
 
     var data;
 
-    if ( !stream ) {
+    debug( 'insertFile', input );
+
+    if ( !input ) {
         this._nextChr();
         return;
     }
