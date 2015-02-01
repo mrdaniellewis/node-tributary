@@ -151,7 +151,7 @@ describe( 'a tributary stream', function() {
 
 	} );
 
-	it ( 'Doesn\'t match a broken placeholder', function() {
+	it( 'Doesn\'t match a broken placeholder', function() {
 		
 		var working = '<!-- include "filename" -->';
 
@@ -186,7 +186,7 @@ describe( 'a tributary stream', function() {
 
 	} );
 
-	it ( 'Doesn\'t match a broken placeholder across chunks', function() {
+	it( 'Doesn\'t match a broken placeholder across chunks', function() {
 		
 		// There are a lot of combinations to run!
 		this.timeout( 10000 );
@@ -228,7 +228,7 @@ describe( 'a tributary stream', function() {
 
 	} );
 
-	it ('doesn\'t match if the filename exceeds maxFilename', function() {
+	it('doesn\'t match if the filename exceeds maxFilename', function() {
 
 		function getStream() {
 			throw new Error('Should not be called');
@@ -247,7 +247,7 @@ describe( 'a tributary stream', function() {
 			} );
 	} );
 
-	it ( 'replaces placeholders with a string', function() {
+	it( 'replaces placeholders with a string', function() {
 
 		function getStream( filename, cb ) {
 			cb('replacement');
@@ -271,7 +271,7 @@ describe( 'a tributary stream', function() {
 
 	} );
 
-	it ( 'replaces placeholders with a buffer', function() {
+	it( 'replaces placeholders with a buffer', function() {
 
 		function getStream( filename, cb ) {
 			cb( new Buffer('replacement') );
@@ -295,7 +295,7 @@ describe( 'a tributary stream', function() {
 
 	} );
 
-	it ( 'replaces placeholders with a stream', function() {
+	it( 'replaces placeholders with a stream', function() {
 
 		function getStream( filename, cb ) {
 			var input = new PassThrough();
@@ -322,6 +322,46 @@ describe( 'a tributary stream', function() {
 				expect(data).toBe( 'foo part 1 part 2 bar' );
 			} );
 
+
+	} );
+
+	it( 'allows custom placeholders', function() {
+
+		function getStream( filename, cb ) {
+			expect(filename).toBe('filename');
+			cb('');
+		}
+
+		var stream = new Tributary( { getStream: getStream, placeholderStart: '/* include ', placeholderEnd: ' */' } );
+		var ret = collect( stream, 'utf8' );
+
+		stream.end( '/* include "filename" */' );
+
+		return ret
+			.then( function(data) {
+				// Placeholder should be removed
+				expect(data).toBe( '' );
+			} );
+
+	} );
+
+	it( 'allows the end placeholder to be empty', function() {
+
+		function getStream( filename, cb ) {
+			expect(filename).toBe('filename');
+			cb('');
+		}
+
+		var stream = new Tributary( { getStream: getStream, placeholderStart: '// include ', placeholderEnd: '' } );
+		var ret = collect( stream, 'utf8' );
+
+		stream.end( '// include "filename"' );
+
+		return ret
+			.then( function(data) {
+				// Placeholder should be removed
+				expect(data).toBe( '' );
+			} );
 
 	} );
 

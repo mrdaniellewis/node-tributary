@@ -7,7 +7,7 @@ var util = require('util');
 var debug = require('debug')('tributary');
 
 // Very verbose debugging, best left commented out
-// var debugVerbose = require('debug')('tributary:verbose');
+//var debugVerbose = require('debug')('tributary:verbose');
 
 /**
  *  Tests if the placeholder is within the stream
@@ -29,12 +29,18 @@ function Matcher( start, end, maxPathLength) {
  */
 Matcher.prototype.compile = function( start, end ) {
 
-    this.sequence = start.split('')
+    var sequence = start.split('')
         .concat(this.delimiter)
         .concat(states.startCapture.bind(this))
-        .concat(states.capture.bind(this))
-        .concat(end.split(''));
+        .concat(states.capture.bind(this));
 
+    if ( end ) {
+        sequence = sequence.concat(end.split(''));
+    }
+
+    debug( sequence );
+
+    this.sequence = sequence;
 };
 
 /**
@@ -55,6 +61,8 @@ Matcher.prototype.next = function(chr) {
     } else if ( typeof state === 'function' ) {
         state(chr);
     }
+
+    //debugVerbose( 'next', this.cursor, this.sequence.length );
 
     switch( this.cursor ) {
 
@@ -115,7 +123,7 @@ function Tributary( options ) {
 
     this._matcher = new Matcher( 
         options.placeholderStart || '<!-- include ',
-        options.placeholderEnd || ' -->',
+        options.placeholderEnd !== undefined ? options.placeholderEnd : ' -->',
         options.maxPathLength
     );
        
