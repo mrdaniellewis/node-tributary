@@ -1,0 +1,23 @@
+{
+  "name": "tributary",
+  "version": "1.0.0",
+  "description": "Insert one stream into another",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "debug": "^2.1.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.1.0",
+    "expect": "^1.4.0",
+    "promise-util": "^1.0.0",
+    "stream-collect": "^1.0.0"
+  },
+  "author": "Daniel Lewis",
+  "license": "ISC",
+  "repository": "https://github.com/mrdaniellewis/node-tributary.git"
+}
+
+
