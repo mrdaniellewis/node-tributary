@@ -389,6 +389,18 @@ describe( 'a tributary stream', function() {
 
 	} );
 
+	it( 'survies a really big file', function() {
+
+		var fs = require('fs');
+		var path = require('path');
+		return collect( 
+			fs.createReadStream( path.resolve( __dirname, 'war-and-peace.txt' ) )
+				.pipe( new Tributary() )
+		);
+
+
+	} );
+
 } );
 
 

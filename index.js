@@ -171,65 +171,60 @@ Tributary.prototype._insertFile = function( input ) {
 /**
  *  Process the next octet in the stream
  */
-Tributary.prototype._nextChr = function(cb) {
+Tributary.prototype._nextChr = function() {
 
     var ts = this._tributaryState;
+    var chr;
 
-    var chr = ts.chunk[ts.cursor++];
+    while( ( chr = ts.chunk[ts.cursor++] ) ) {
 
-    if ( chr === undefined ) {
-        // End of chunk
+        var match = this._matcher.next(chr);
 
-        if ( ts.contentEnd > -1 ) {
-            // Ouput any unmatched parts of the chunk
-            this.push( ts.chunk.slice( ts.contentStart, ts.contentEnd ) );
-            ts.remainder = ts.chunk.slice(ts.contentEnd);
+        //debugVerbose( 'match result', chr, match, this._matcher.filename, ts.cursor, ts.contentStart, ts.contentEnd );
 
-        } else {
-            this.push( ts.chunk.slice(ts.contentStart) );
+        switch( match ) {
+
+            case 'no-match':
+            case 'matching':
+                // No need to do anything
+            break;
+            case 'match-start':
+                // Match has started
+                if ( ts.contentEnd === -1 ) {
+                    ts.contentEnd = ts.cursor - 1;
+                } 
+            break;  
+            case 'match-abort':
+                ts.contentEnd = -1;
+            break;
+            case 'match-found':
+                // Match found
+
+                // Push part of the chunk before the match
+                this.push( ts.chunk.slice( ts.contentStart, ts.contentEnd ) );
+                // Reset the start cursor
+                ts.contentStart = ts.cursor;
+                ts.contentEnd = -1;
+
+                // Insert the file
+                this.getStream( this._matcher.filename, this._insertFile.bind(this) );
+                return; 
         }
-
-        // End the processing of this chunk
-        ts.cb();
-        return;
     }
 
-    var match = this._matcher.next(chr);
+    // End of chunk
 
-    //debugVerbose( 'match result', chr, match, this._matcher.filename, ts.cursor, ts.contentStart, ts.contentEnd );
+    if ( ts.contentEnd > -1 ) {
+        // Ouput any unmatched parts of the chunk
+        this.push( ts.chunk.slice( ts.contentStart, ts.contentEnd ) );
+        ts.remainder = ts.chunk.slice(ts.contentEnd);
 
-    switch( match ) {
-
-        case 'no-match':
-            // Do nothing
-            this._nextChr();
-        break;
-        case 'match-start':
-            // Match has started
-            if ( ts.contentEnd === -1 ) {
-                ts.contentEnd = ts.cursor - 1;
-            }
-            /* falls through */
-        case 'matching':
-            this._nextChr();
-        break;  
-        case 'match-abort':
-            ts.contentEnd = -1;
-            this._nextChr();
-        break;
-        case 'match-found':
-            // Match found
-
-            // Push part of the chunk before the match
-            this.push( ts.chunk.slice( ts.contentStart, ts.contentEnd ) );
-            // Reset the start cursor
-            ts.contentStart = ts.cursor;
-            ts.contentEnd = -1;
-
-            // Insert the file
-            this.getStream( this._matcher.filename, this._insertFile.bind(this) );
-        break;
+    } else {
+        this.push( ts.chunk.slice(ts.contentStart) );
     }
+
+    // End the processing of this chunk
+    ts.cb(); 
   
 };
 
