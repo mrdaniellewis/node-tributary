@@ -1,6 +1,6 @@
 {
   "name": "tributary",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Insert one stream into another",
   "main": "index.js",
   "scripts": {
@@ -19,5 +19,3 @@
   "license": "ISC",
   "repository": "https://github.com/mrdaniellewis/node-tributary.git"
 }
-
-
