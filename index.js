@@ -107,7 +107,8 @@ var states = {
  *  Include one stream in another
  *  @param {String} [options.placeholderStart="<!-- include "] The start placeholder
  *  @param {String} [options.placeholderStart=" -->"] The end placeholder
- *  @param {Integer} [options.maxPathLength] The maximum length of a path
+ *  @param {Integer} [options.maxPathLength=512] The maximum length of a path
+ *  @param {String} [options.delmiter="] The delimiter to use for filenames, a single character
  *  @param {Function} getStream A function that when provided with a filename
  *      and callback will return a stream to be included.
  */
@@ -124,7 +125,8 @@ function Tributary( options ) {
     this._matcher = new Matcher( 
         options.placeholderStart || '<!-- include ',
         options.placeholderEnd !== undefined ? options.placeholderEnd : ' -->',
-        options.maxPathLength
+        options.maxPathLength,
+        options.delimiter
     );
        
     this._tributaryState = {

@@ -369,6 +369,31 @@ describe( 'a tributary stream', function() {
 
 	} );
 
+	it( 'allows custom delimiters', function() {
+
+		function getStream( filename, cb ) {
+			expect(filename).toBe('filename');
+			cb('');
+		}
+
+		var stream = new Tributary( { 
+			getStream: getStream, 
+			placeholderStart: '/* include ', 
+			placeholderEnd: ' */', 
+			delimiter: "'"
+		} );
+		var ret = collect( stream, 'utf8' );
+
+		stream.end( "/* include 'filename' */" );
+
+		return ret
+			.then( function(data) {
+				// Placeholder should be removed
+				expect(data).toBe( '' );
+			} );
+
+	} );
+
 	it( 'allows the end placeholder to be empty', function() {
 
 		function getStream( filename, cb ) {

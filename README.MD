@@ -8,6 +8,7 @@ Creates a new `stream.Transform` with the options:
 
 * `placeholderStart` - `String` - the opening text of the placeholder. Default = `<!-- include `
 * `placeholderEnd` - `String` - the closing text the placeholder. Default = ` -->`
+* `delimiter` - `String` - delimiter for the file name. Must be a single character. Default = `"`
 * `getStream` - `Function` - The first argument is the filename from the placeholder, and the second a callback, which should be called with a `String`, `Buffer` or `stream.Readable`.
 
 These are all optional.  If not supplied it will act just like a PassThrough stream.
