@@ -1,5 +1,7 @@
 # Tributary
 
+[![npm version](https://badge.fury.io/js/gulp-js-escape.svg)](http://badge.fury.io/js/node-tributary)
+
 A transform stream that will merge one stream into another.  Intended to be used as part of a Gulp build process.
 
 ## new Tributary( options )
